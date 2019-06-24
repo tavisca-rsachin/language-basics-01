@@ -33,43 +33,49 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
                 throw new ArgumentNullException(nameof(equation));
 
             string[] equationSplitAsterisk = equation.Split("*");
-            string operandA = equationSplitAsterisk[0];
+            string multiplier1 = equationSplitAsterisk[0];
             string[] equationSplitAsteriskAndEqual =  equationSplitAsterisk[1].Split("=");
-            string operandB = equationSplitAsteriskAndEqual[0];
-            string operandC = equationSplitAsteriskAndEqual[1];
+            string multiplier2 = equationSplitAsteriskAndEqual[0];
+            string result = equationSplitAsteriskAndEqual[1];
 
-            if(operandC.Contains('?'))
-                return CalValue(operandA, operandB, operandC, Cases.ThirdCase);
-            else if(operandA.Contains('?'))
-                return CalValue(operandC, operandB, operandA, Cases.FirstCase);
-            else if(operandB.Contains('?'))
-                return CalValue(operandC, operandA, operandB, Cases.SecondCase);
-            return -1;
+            return GetMissingDigit(multiplier1, multiplier2, result);
             
         }
 
-        public static int CalValue(string X, string Y, string Z, Cases i)
+        public static int GetMissingDigit(string multiplier1, string multiplier2, string result)
         {
-            int x = Int32.Parse(X);
-            int y = Int32.Parse(Y);
-            
-            int z;
-            if(i == Cases.ThirdCase)
-                z = x * y;
-            else 
-            {
-                if(x == 0 || y == 0 || x % y != 0)
+            int multiplierTemp;
+            if(int.TryParse(multiplier1, out multiplierTemp) == false)
+                return GetMissingDigitInMultiplier(int.Parse(multiplier2), multiplier1, int.Parse(result));
+            else if(int.TryParse(multiplier2, out multiplierTemp) == false)
+                return GetMissingDigitInMultiplier(int.Parse(multiplier1), multiplier2, int.Parse(result));
+            else
+                return GetMissingDigitInResult(int.Parse(multiplier1), int.Parse(multiplier2), result);
+
+        }
+
+        public static int GetMissingDigitInMultiplier(int multiplier1, string multiplier2, int result)
+        {
+            if(multiplier1 == 0 || result == 0 || result % multiplier1 != 0)
+                return -1;
+
+            return GetDigitFromEvaluatedResult(result/multiplier1, multiplier2);
+        }
+
+        public static int GetMissingDigitInResult(int multiplier1, int multiplier2, string result)
+        {
+            return GetDigitFromEvaluatedResult(multiplier1*multiplier2, result);
+        }
+
+        public static int GetDigitFromEvaluatedResult(int evaluatedResult, string targetedMultiplierOrResult)
+        {
+            string evaluatedResultStr = Convert.ToString(evaluatedResult);
+
+            if(evaluatedResultStr.Length != targetedMultiplierOrResult.Length)
                     return -1;
-                z = x / y;
-            }
 
-            string res = Convert.ToString(z);
-
-            if(res.Length != Z.Length)
-                    return -1;
-
-            int ind = Z.IndexOf('?');
-            return (int)(res[ind]-'0');
+            int ind = targetedMultiplierOrResult.IndexOf('?');
+            return (int)(evaluatedResultStr[ind]-'0');
         }
     }
 }
