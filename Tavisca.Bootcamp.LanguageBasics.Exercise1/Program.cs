@@ -4,6 +4,13 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 {
     class Program
     {
+        public enum Cases
+        {
+            FirstCase,
+            SecondCase,
+            ThirdCase
+
+        }
         static void Main(string[] args)
         {
             Test("42*47=1?74", 9);
@@ -22,27 +29,32 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 
         public static int FindDigit(string equation)
         {
-            string[] arrABC = equation.Split("*");
-            string A = arrABC[0];
-            string[] arrBC =  arrABC[1].Split("=");
-            string B = arrBC[0];
-            string C = arrBC[1];
+            if(String.IsNullOrEmpty(equation))
+                throw new ArgumentNullException(nameof(equation));
 
-            if(C.Contains('?'))
-                return CalValue(A, B, C, 3);
-            else if(A.Contains('?'))
-                return CalValue(C, B, A, 1);
-            else if(B.Contains('?'))
-                return CalValue(C, A, B, 2);
+            string[] equationSplitAsterisk = equation.Split("*");
+            string operandA = equationSplitAsterisk[0];
+            string[] equationSplitAsteriskAndEqual =  equationSplitAsterisk[1].Split("=");
+            string operandB = equationSplitAsteriskAndEqual[0];
+            string operandC = equationSplitAsteriskAndEqual[1];
+
+            if(operandC.Contains('?'))
+                return CalValue(operandA, operandB, operandC, Cases.ThirdCase);
+            else if(operandA.Contains('?'))
+                return CalValue(operandC, operandB, operandA, Cases.FirstCase);
+            else if(operandB.Contains('?'))
+                return CalValue(operandC, operandA, operandB, Cases.SecondCase);
             return -1;
+            
         }
-        public static int CalValue(string X, string Y, string Z, int i)
+
+        public static int CalValue(string X, string Y, string Z, Cases i)
         {
             int x = Int32.Parse(X);
             int y = Int32.Parse(Y);
             
             int z;
-            if(i == 3)
+            if(i == Cases.ThirdCase)
                 z = x * y;
             else 
             {
